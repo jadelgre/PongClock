@@ -121,6 +121,7 @@ function display(x,y) {
 }
 
 display.prototype.draw = function( p ){
+	p.font = "20px Arial";
 	p.fillText( this.value, this.x, this.y );
 };
 
