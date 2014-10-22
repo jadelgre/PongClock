@@ -56,10 +56,10 @@ clock.prototype.update = function() {
 	//	this.minuteDisplay.value = 0;
 	//}
 	
-	if( this.minuteDisplay.value < date.getMinutes()  && date.getMinutes() < 60){
+	if( this.minuteDisplay.value < date.getMinutes()  && date.getMinutes() < 59){
 		this.minutePaddle.move(this.ball, this.minutePaddle);
 		this.hourPaddle.moveSlow(this.ball, this.hourPaddle);
-	} else if (  this.minuteDisplay.value == 59 && date.getMinutes() == 60) {
+	} else if (  this.minuteDisplay.value == 59 && this.minuteDisplay.value > date.getMinutes() ) {
 		this.minutePaddle.moveSlow(this.ball, this.minutePaddle);
 		this.hourPaddle.move(this.ball, this.hourPaddle);
 	}else {	
@@ -151,7 +151,7 @@ paddle.prototype.moveSlow = function(b,p) {
 var canvas = document.getElementById("game");
 	var difference = b.y - this.y;
 	if( this.x > canvas.width / 2 && b.dx > 0 ) this.y += (difference - this.height/2) / 100 ;
-	else if ( this.x < canvas.width /2 && b.dx < 0 ) this.y -= (difference - this.height/2) /100;
+	else if ( this.x < canvas.width /2 && b.dx < 0 ) this.y -= (difference - this.height/2) / -100;
 	//if( this.x > canvas.width / 2 ) this.y = b.y - this.height / 2;
 	//else if ( this.x < canvas.width / 2 && b.dx < 0 ) this.y = b.y;
 }
