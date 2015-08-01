@@ -18,12 +18,15 @@ var pong_paddle = function(width, height, xpos) {
 	this.update = function() { 
 		// clear the current paddle, update y position, and redraw it
 		var next_position
-		if( ball.dy > 0 ){
+		var next_ball_pos = ball.y + ball.dy;
+		if( ball.dy > 0 ){ // if the ball is going downwards
 			next_position = this.y + this.height + ball.dy;
+			if( next_position > next_ball_pos + ball.height) next_position = -999; // if the paddle is outrunning the ball
 		} else {
 			next_position = this.y + ball.dy;
+			if( next_position < next_ball_pos) next_position = -999;
 		}
-		if( next_position >= 0 && next_position <= canvasHeight) { // if it's within the bounds of the canvas
+		if( next_position >= 0 && next_position <= canvasHeight ) { // if it's within the bounds of the canvas
 			this.clear(); 
 			this.y += ball.dy;
 		}
@@ -59,12 +62,16 @@ var pong_ball = function(width, height) {
 			this.dy = -this.dy; // change the ball's vertical direction if it's going off the top or the bottom 
 		// check for collision with the right paddle
 		} 
-		if( this.x > canvasWidth || this.x < 0 ) {
+		if( this.x + this.width > canvasWidth || this.x - this.width < 0 ) {
 			this.dx = -this.dx; // make the ball bounce off horizontal walls for debug	
-		} else if( this.x + this.width >+ rightPaddle.x && this.y >= rightPaddle.y && this.y <= rightPaddle.y + rightPaddle.height) {
+		} else if( this.x + this.width >= rightPaddle.x
+			&& this.y >= rightPaddle.y
+			&& this.y < rightPaddle.y + rightPaddle.height) {
 			this.dx = -this.dx;
 		// check for collision with the left paddle
-		} else if( this.x - this.width <= leftPaddle.x && this.y >= leftPaddle.y && this.y <= leftPaddle.y + leftPaddle.height) {
+		} else if( this.x - this.width <= leftPaddle.x
+			&& this.y >= leftPaddle.y
+			&& this.y < leftPaddle.y + leftPaddle.height) {
 			this.dx = -this.dx;
 		} else this.draw();
 	};
