@@ -106,14 +106,23 @@ var line = function() {
 	};
 }
 
+var clock = function() {
+	this.date = new Date();
+	this.hour = this.date.getHours();
+	this.minute = this.date.getMinutes();
+	context.fillText(this.hour%12, canvasWidth / 2 - canvasWidth / 20, canvasHeight / 20);
+	context.fillText(this.minute, canvasWidth / 2 + canvasWidth / 20, canvasHeight / 20);
+}
+
 var update = function() {
 	ball.update();
 	leftPaddle.update();
 	rightPaddle.update();
 	line.update();
+	clock();
 }
 
-window.onload = function() {
+var configure_canvas = function() {
 	// get the canvas and context for drawing graphics
 	canvas = document.getElementById("game");
 	canvas.style.backgroundColor = background;
@@ -122,6 +131,9 @@ window.onload = function() {
 	context = canvas.getContext( '2d' ); 
 	canvasWidth = canvas.width;
 	canvasHeight = canvas.height;
+}
+
+var main = function() { 
 	// instantiate the game components
 	leftPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth / 20);
 	leftPaddle.draw();
@@ -130,4 +142,10 @@ window.onload = function() {
 	ball = new pong_ball(canvasWidth, canvasHeight);
 	line = new line();
 	setInterval( update, 1000 / fps );
+
+}
+
+window.onload = function() {
+	configure_canvas();
+	main();
 }
