@@ -21,19 +21,13 @@ var pong_paddle = function(width, height, xpos) {
 		if( ball.dy > 0 ){
 			next_position = this.y + this.height + ball.dy;
 		} else {
-			console.log("B");
 			next_position = this.y + ball.dy;
 		}
-		if( next_position >= 0 || next_position <= canvasHeight) { // if it's within the bounds of the canvas
+		if( next_position >= 0 && next_position <= canvasHeight) { // if it's within the bounds of the canvas
 			this.clear(); 
 			this.y += ball.dy;
-			this.draw();
-		} else if ( ball.dy > 0 ) {
-			console.log("slowing");
-			this.y += 0;
-		} else {
-			this.y += -1;
 		}
+		this.draw();
 	};
 	
 	this.clear = function() {
@@ -67,15 +61,15 @@ var pong_ball = function(width, height) {
 		} 
 		if( this.x > canvasWidth || this.x < 0 ) {
 			this.dx = -this.dx; // make the ball bounce off horizontal walls for debug	
-		} else if( this.x + this.width >+ rightPaddle.x ) { // && this.y >= rightPaddle.y && this.y <= rightPaddle.y) {
+		} else if( this.x + this.width >+ rightPaddle.x && this.y >= rightPaddle.y && this.y <= rightPaddle.y + rightPaddle.height) {
 			this.dx = -this.dx;
 		// check for collision with the left paddle
-		} else if( this.x - this.width <= leftPaddle.x ) { //  && this.y >= leftPaddle.y && this.y <= leftPaddle.y) {
+		} else if( this.x - this.width <= leftPaddle.x && this.y >= leftPaddle.y && this.y <= leftPaddle.y + leftPaddle.height) {
 			this.dx = -this.dx;
 		} else this.draw();
 	};
 	this.clear = function() { 
-		context.clearRect(this.x, this.y,this.width,this.height); // draw a rectangle over the current one to clear it
+		context.clearRect(this.x, this.y,this.x+this.width,this.y+this.height); // draw a rectangle over the current one to clear it
 	};
 
 	this.draw = function() {
@@ -98,6 +92,8 @@ window.onload = function() {
 	// get the canvas and context for drawing graphics
 	canvas = document.getElementById("game");
 	canvas.style.backgroundColor = background;
+	canvas.width = 500; // window.innerWidth;
+	canvas.height = 500; // window.innerHeight;
 	context = canvas.getContext( '2d' ); 
 	canvasWidth = canvas.width;
 	canvasHeight = canvas.height;
