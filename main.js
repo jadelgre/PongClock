@@ -76,7 +76,7 @@ var pong_ball = function(width, height) {
 		} else this.draw();
 	};
 	this.clear = function() { 
-		context.clearRect(this.x, this.y,this.x+this.width,this.y+this.height); // draw a rectangle over the current one to clear it
+		context.clearRect(this.x, this.y,this.width,this.height); // draw a rectangle over the current one to clear it
 	};
 
 	this.draw = function() {
@@ -89,10 +89,28 @@ var pong_ball = function(width, height) {
 
 }
 
+// draws dashed line down the middle of the screen
+var line = function() {
+	this.height = 20;
+	this.width = 5;
+	this.next_height = 0;
+	this.middle = canvasWidth / 2 - this.width / 2;
+	this.update = function() {
+		for( this.next_height; this.next_height < canvasHeight; this.next_height += this.height*2) {
+			context.fillStyle = "white";
+			context.beginPath();
+			context.rect(this.middle, this.next_height, this.width, this.height);
+			context.closePath();
+			context.fill();
+		}
+	};
+}
+
 var update = function() {
 	ball.update();
 	leftPaddle.update();
 	rightPaddle.update();
+	line.update();
 }
 
 window.onload = function() {
@@ -110,5 +128,6 @@ window.onload = function() {
 	rightPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth - (canvasWidth / 20));
 	rightPaddle.draw();
 	ball = new pong_ball(canvasWidth, canvasHeight);
+	line = new line();
 	setInterval( update, 1000 / fps );
 }
