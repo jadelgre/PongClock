@@ -37,24 +37,24 @@ var pong_paddle = function(width, height, xpos) {
 var pong_ball = function(width, height) {
 	this.x = width / 2;
 	this.y = width / 2;
-	this.dx = width / 200;
-	this.dy = width / 200;
-	this.xSize = 50; // width / 200;
-	this.ySize = 50; // width / 200;
+	this.dx = width / 100;
+	this.dy = width / 100;
+	this.height = 50; // width / 200;
+	this.width = 50; // width / 200;
 	this.update = function() {
 		this.clear();
 		this.x += this.dx;
-		//this.y += this.dy;
+		this.y += this.dy;
 		this.draw();
 	};
 	this.clear = function() { 
-		context.clearRect(this.x, this.y,this.xSize,this.ySize); // draw a rectangle over the current one to clear it
+		context.clearRect(this.x, this.y,this.width,this.height); // draw a rectangle over the current one to clear it
 	};
 
 	this.draw = function() {
 		context.fillStyle = "white";
 		context.beginPath();
-		context.rect(this.x,this.y,this.xSize,this.ySize);
+		context.rect(this.x,this.y,this.width,this.height);
 		context.closePath();
 		context.fill();
 	}
@@ -72,11 +72,11 @@ window.onload = function() {
 	canvas = document.getElementById("game");
 	canvas.style.backgroundColor = background;
 	context = canvas.getContext( '2d' ); 
-	width = canvas.width;
-	height = canvas.height;
+	canvasWidth = canvas.width;
+	canvasHeight = canvas.height;
 	// instantiate the game components
-	leftPaddle = new pong_paddle(width, height, width / 20);
-	rightPaddle = new pong_paddle(width, height, width - (width / 20));
-	ball = new pong_ball(width, height);
+	leftPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth / 20);
+	rightPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth - (canvasWidth / 20));
+	ball = new pong_ball(canvasWidth, canvasHeight);
 	setInterval( update, 1000 / fps );
 }
