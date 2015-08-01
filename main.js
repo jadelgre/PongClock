@@ -38,13 +38,14 @@ var pong_ball = function(width, height) {
 	this.x = width / 2;
 	this.y = width / 2;
 	this.dx = width / 100;
-	this.dy = width / 100;
-	this.height = 50; // width / 200;
-	this.width = 50; // width / 200;
+	this.dy = -width / 100;
+	this.height = width / 100;
+	this.width = width / 100;
 	this.update = function() {
 		this.clear();
 		this.x += this.dx;
 		this.y += this.dy;
+		if( this.y + this.height > canvasHeight || this.y - this.height < 0 ) this.dy = -this.dy; // change the ball's vertical direction if it's going off the top or the bottom 
 		this.draw();
 	};
 	this.clear = function() { 
@@ -62,8 +63,8 @@ var pong_ball = function(width, height) {
 }
 
 var update = function() {
-	leftPaddle.update();
-	rightPaddle.update();
+	if(ball.dx < 0) leftPaddle.update();
+	else rightPaddle.update();
 	ball.update();
 }
 
