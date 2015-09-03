@@ -1,151 +1,115 @@
 // Jacob Adelgren 2015
-// 
-var canvas;
-var context;
-var background = "black";
-var fps = 30;
 // variables for game objects
 var leftPaddle;
 var rightPaddle;
 var ball;
+// configuration values
+var canvas;
+var fps = 30;
+var context; 
+var canvasHeight = 500;
+var canvasWidth = 500;
+var gameBackgroundColor = "black";
 
-var pong_paddle = function(width, height, xpos) {
-	this.width = width / 30;
-	this.height = height / 5;
-	this.x = xpos;
-	this.y = height / 2 - this.height / 2;
-	this.dy = height / 100;
-	this.update = function() { 
-		// clear the current paddle, update y position, and redraw it
-		var next_position
-		var next_ball_pos = ball.y + ball.dy;
-		if( ball.dy > 0 ){ // if the ball is going downwards
-			next_position = this.y + this.height + ball.dy;
-			if( next_position > next_ball_pos + ball.height) next_position = -999; // if the paddle is outrunning the ball
-		} else {
-			next_position = this.y + ball.dy;
-			if( next_position < next_ball_pos) next_position = -999;
-		}
-		if( next_position >= 0 && next_position <= canvasHeight ) { // if it's within the bounds of the canvas
-			this.clear(); 
-			this.y += ball.dy;
-		}
-		this.draw();
-	};
+var initialize_canvas = function() {
+	canvas = document.getElementById("game");
+	canvas.style.backgroundColor = gameBackgroundColor;
+	canvas.width = canvasWidth;
+	canvas.height = canvasWidth;
+	context = canvas.getContext('2d');
+} 
 	
-	this.clear = function() {
-		context.clearRect(this.x, this.y,this.width,this.height); // draw a rectangle over the current one to clear it
-	};
-	
-	this.draw = function() {
-		context.fillStyle = "white";
-		context.beginPath();
-		context.rect(this.x,this.y,this.width,this.height);
-		context.closePath();
+var pongBall = {
+	dx: -10,
+	dy: -1,
+	rad: 10,
+	x: canvasWidth / 2,
+	y: canvasHeight / 2
+}
+
+var leftPaddle = { 
+	height: 100,
+	width: 10,
+	x: 20,
+	y: canvasHeight / 2
+}
+
+var rightPaddle = {
+	x: canvasWidth - 20,
+	height: 100,
+	width: 10,
+	y: canvasHeight / 2
+}
+
+var draw = function () {
+	// clear the board
+	context.clearRect(0,0,canvasWidth, canvasHeight);
+	// initialize graphics properties
+	context.beginPath();
+	context.strokeStyle = "white";
+	// draw paddles and ball
+	context.rect(leftPaddle.x, leftPaddle.y-leftPaddle.height/2, leftPaddle.width, leftPaddle.height);
+	context.stroke();
+	context.closePath();
+	context.fill();	
+	// draw right paddle
+	context.rect(rightPaddle.x, rightPaddle.y-rightPaddle.height/2, rightPaddle.width, rightPaddle.height);
+	context.stroke();
+	context.closePath();
+	context.fill();
+	// draw ball
+	context.beginPath();
+	context.arc(pongBall.x,pongBall.y,10,0,2*Math.PI);
+	context.stroke();
+	context.closePath();
+	context.fill();
+	// draw dashed line
+	lineHeight = canvasHeight / 20;
+	lineWidth = canvasWidth / 75;
+	for(var i = 0; i < canvasHeight; i += 2*lineHeight) {
+		context.rect(canvasWidth / 2 - lineWidth / 2, i, lineWidth, lineHeight);
 		context.fill();
 	}
-}
-
-var pong_ball = function(width, height) {
-	this.x = width / 2;
-	this.y = width / 2;
-	this.dx = width / 100;
-	this.dy = -width / 100;
-	this.height = width / 100;
-	this.width = width / 100;
-	this.update = function() {
-		this.clear();
-		this.x += this.dx;
-		this.y += this.dy;
-		// check for collision with top or bottom bound of canvas
-		if( this.y + this.height > canvasHeight || this.y - this.height < 0 ) {
-			this.dy = -this.dy; // change the ball's vertical direction if it's going off the top or the bottom 
-		// check for collision with the right paddle
-		} 
-		if( this.x + this.width > canvasWidth || this.x - this.width < 0 ) {
-			this.dx = -this.dx; // make the ball bounce off horizontal walls for debug	
-		} else if( this.x + this.width >= rightPaddle.x
-			&& this.y >= rightPaddle.y
-			&& this.y < rightPaddle.y + rightPaddle.height) {
-			this.dx = -this.dx;
-		// check for collision with the left paddle
-		} else if( this.x - this.width <= leftPaddle.x
-			&& this.y >= leftPaddle.y
-			&& this.y < leftPaddle.y + leftPaddle.height) {
-			this.dx = -this.dx;
-		} else this.draw();
-	};
-	this.clear = function() { 
-		context.clearRect(this.x, this.y,this.width,this.height); // draw a rectangle over the current one to clear it
-	};
-
-	this.draw = function() {
-		context.fillStyle = "white";
-		context.beginPath();
-		context.rect(this.x,this.y,this.width,this.height);
-		context.closePath();
-		context.fill();
-	}
-
-}
-
-// draws dashed line down the middle of the screen
-var line = function() {
-	this.height = 20;
-	this.width = 5;
-	this.next_height = 0;
-	this.middle = canvasWidth / 2 - this.width / 2;
-	this.update = function() {
-		for( this.next_height; this.next_height < canvasHeight; this.next_height += this.height*2) {
-			context.fillStyle = "white";
-			context.beginPath();
-			context.rect(this.middle, this.next_height, this.width, this.height);
-			context.closePath();
-			context.fill();
-		}
-	};
-}
-
-var clock = function() {
+	// draw clock 
 	this.date = new Date();
 	this.hour = this.date.getHours();
 	this.minute = this.date.getMinutes();
+	context.fillStyle = "white";
+	context.font = '12pt Arial';
 	context.fillText(this.hour%12, canvasWidth / 2 - canvasWidth / 20, canvasHeight / 20);
 	context.fillText(this.minute, canvasWidth / 2 + canvasWidth / 20, canvasHeight / 20);
 }
 
-var update = function() {
-	ball.update();
-	leftPaddle.update();
-	rightPaddle.update();
-	line.update();
-	clock();
-}
+var update = function () {
+	// update left paddle
 
-var configure_canvas = function() {
-	// get the canvas and context for drawing graphics
-	canvas = document.getElementById("game");
-	canvas.style.backgroundColor = background;
-	canvas.width = 500; // window.innerWidth;
-	canvas.height = 500; // window.innerHeight;
-	context = canvas.getContext( '2d' ); 
-	canvasWidth = canvas.width;
-	canvasHeight = canvas.height;
-}
+	// update right paddle
+	if( rightPaddle.y + rightPaddle.height / 2 + pongBall.dy < canvasHeight && rightPaddle.y - rightPaddle.height / 2 + pongBall.dy > 0 ) {
+		rightPaddle.y += pongBall.dy; 
+	}
+	
+	if( leftPaddle.y + leftPaddle.height / 2 + pongBall.dy < canvasHeight && leftPaddle.y - leftPaddle.height / 2 + pongBall.dy > 0 ) {
+		leftPaddle.y += pongBall.dy;
+	}
 
-var main = function() { 
-	// instantiate the game components
-	leftPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth / 20);
-	leftPaddle.draw();
-	rightPaddle = new pong_paddle(canvasWidth, canvasHeight, canvasWidth - (canvasWidth / 20));
-	rightPaddle.draw();
-	ball = new pong_ball(canvasWidth, canvasHeight);
-	line = new line();
-	setInterval( update, 1000 / fps );
-
+	// move ball
+	pongBall.x += pongBall.dx;
+	pongBall.y += pongBall.dy;
+	// check for collision
+	if( pongBall.x + pongBall.rad >= canvasWidth // collision with right wall
+	|| pongBall.x - pongBall.rad <= 0 // collision with left wall
+	|| pongBall.x + pongBall.rad >= rightPaddle.x 
+	|| (pongBall.x - pongBall.rad <= leftPaddle.x+leftPaddle.width 
+		&& pongBall.y < leftPaddle.y + leftPaddle.height/2
+		&& pongBall.y > leftPaddle.y - leftPaddle.height/2)) pongBall.dx = -pongBall.dx;
+	// check for ball collision with the top and bottom
+	if( pongBall.y + pongBall.rad >= canvasHeight || pongBall.y - pongBall.rad <= 0 ) pongBall.dy = -pongBall.dy;
+	// redraw all elements
+	draw();
 }
 
 window.onload = function() {
-	configure_canvas();
-	main();
+	initialize_canvas();
+	setInterval(update, 1000 / fps );
 }
+
