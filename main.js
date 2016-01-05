@@ -76,11 +76,12 @@ var draw = function () {
 	}
 	// draw clock 
 	this.date = new Date();
-	this.hour = this.date.getHours();
+	this.hour = this.date.getHours() % 12 || 12; // mod by 12 for conversion from 24 hour format, if remainder = 0 this hour == 12
+	
 	this.minute = this.date.getMinutes();
 	context.fillStyle = "white";
 	context.font = '12pt Arial';
-	context.fillText(this.hour%12, canvasWidth / 2 - canvasWidth / 20, canvasHeight / 20);
+	context.fillText(this.hour, canvasWidth / 2 - canvasWidth / 20, canvasHeight / 20);
 	context.fillText(this.minute, canvasWidth / 2 + canvasWidth / 20, canvasHeight / 20);
 }
 
@@ -108,7 +109,7 @@ var update = function () {
 		} else {
 			leftPaddle.y += (pongBall.y - leftPaddle.y) / variance;
 		}
-	} else if (pongBall.x > (canvasWidth / 2) && pongBall.dy > 0) {
+	} else if (pongBall.x > (canvasWidth / 2) && pongBall.dx > 0) {
 		if(incrementMinute) {
 			variance += 4;
 		}
@@ -145,12 +146,23 @@ var update = function () {
 			console.log('ball hit left wall when it should not have');
 		}
 		pongBall.dx = -pongBall.dx;
-	} else if ( pongBall.x + pongBall.rad >= rightPaddle.x 
-				|| (pongBall.x - pongBall.rad <= leftPaddle.x+leftPaddle.width 
+	// check to see if the center of the ball hits the right paddle
+	} else if ( pongBall.x + pongBall.rad >= rightPaddle.x // 
+				&& pongBall.y >= rightPaddle.y-rightPaddle.height/2 // below top edge of paddle 
+				&& pongBall.y <= rightPaddle.y+rightPaddle.height/2) { // above bottom edge of paddle 
+		pongBall.dx = -pongBall.dx;
+	// check to see if the center of the ball hits the left paddle
+	} else if (pongBall.x - pongBall.rad <= leftPaddle.x+leftPaddle.width 
 				&& pongBall.y < leftPaddle.y + leftPaddle.height/2
-				&& pongBall.y > leftPaddle.y - leftPaddle.height/2)) {
+				&& pongBall.y > leftPaddle.y - leftPaddle.height/2) {
 		pongBall.dx = -pongBall.dx;
 	}
+	// } else if ( pongBall.x + pongBall.rad >= rightPaddle.x && (pongBall.y >= rightPaddle.y || pongBall.y <= rightPaddle.y+rightPaddle.height) // hits right paddle
+	// 			|| (pongBall.x - pongBall.rad <= leftPaddle.x+leftPaddle.width 
+	// 			&& pongBall.y < leftPaddle.y + leftPaddle.height/2
+	// 			&& pongBall.y > leftPaddle.y - leftPaddle.height/2)) {
+	// 	pongBall.dx = -pongBall.dx;
+	// }
 	// check for ball collision with the top and bottom
 	if( pongBall.y + pongBall.rad >= canvasHeight || pongBall.y - pongBall.rad <= 0 ) pongBall.dy = -pongBall.dy;
 	// redraw all elements
