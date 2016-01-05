@@ -11,9 +11,13 @@ var canvasHeight = 500;
 var canvasWidth = 500;
 var gameBackgroundColor = "black";
 
+// clock values
+var displayHour;
+var displayMinute;
+
 // variables that indicate whether a paddle needs to miss
-var incrementHour = false;
-var incrementMinute = false;
+var hourHasChanged = false;
+var minuteHasChanged = false;
 
 var initialize_canvas = function() {
 	canvas = document.getElementById("game");
@@ -100,7 +104,7 @@ var update = function () {
 
 	if(pongBall.x < (canvasWidth / 2) && pongBall.dx < 0) { // if the ball is moving left
 		variance = pongBall.rad;
-		if(incrementHour) {
+		if(hourHasChanged) {
 			variance *= 4;
 		}
 		
@@ -110,7 +114,7 @@ var update = function () {
 			leftPaddle.y += (pongBall.y - leftPaddle.y) / variance;
 		}
 	} else if (pongBall.x > (canvasWidth / 2) && pongBall.dx > 0) {
-		if(incrementMinute) {
+		if(minuteHasChanged) {
 			variance += 4;
 		}
 
@@ -133,15 +137,15 @@ var update = function () {
 	pongBall.y += pongBall.dy;
 	// check for collision
 	if( pongBall.x + pongBall.rad >= canvasWidth ) { // collision with right wall
-		if(incrementMinute) {
-			incrementMinute = false;
+		if(minuteHasChanged) {
+			minuteHasChanged = false;
 		} else {
 			console.log('ball hit right wall when it should not have');
 		}
 		pongBall.dx = -pongBall.dx;
 	} else if ( pongBall.x - pongBall.rad <= 0 ) {// collision with left wall
-		if(incrementHour) {
-			incrementHour = false;
+		if(hourHasChanged) {
+			hourHasChanged = false;
 		} else {
 			console.log('ball hit left wall when it should not have');
 		}
@@ -177,12 +181,20 @@ var clockCycle = function() {
 	if(seconds == 0) {
 		if(minutes == 0) {
 			// if seconds == 0 and minutes == 0 then it's the top of the hour
-			incrementHour = true;
+			hourHasChanged = true;
 		} else {
 			// else it's just the start of a new minute
-			incrementMinute = true;
+			minuteHasChanged = true;
 		}
 	}
+}
+
+var incrementMinute = function() {
+
+}
+
+var incrementHour = function() {
+	
 }
 
 window.onload = function() {
