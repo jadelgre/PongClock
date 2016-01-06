@@ -1,5 +1,6 @@
-h1 {
+h1, p {
     text-align: center;
+    margin: 10px;
 }
 
 #game {
@@ -8,5 +9,5 @@ h1 {
     margin-left: auto;
     margin-right: auto;
     display: block;
-    width: 600px;
+    width: 500px;
 }
